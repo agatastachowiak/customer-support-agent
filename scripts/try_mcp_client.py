@@ -26,6 +26,11 @@ async def main(): # function that can wait without freezing everything
         )
         print("is_error:", result.is_error)
         print("result:", result.content[0].text)
+        
+        result = await client.call_tool(
+            "search_policies", {"query": "Can I still return my headphones?"}
+        )
+        print("\nsearch result:", result.content[0].text[:500], "...")
 
 
 asyncio.run(main())                               # starts it all
