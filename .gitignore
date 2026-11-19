@@ -4,3 +4,4 @@ data/shop.db
 __pycache__/
 .DS_Store
 data/escalations.jsonl
+.vscode/
