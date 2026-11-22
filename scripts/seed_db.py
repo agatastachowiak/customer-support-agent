@@ -171,11 +171,11 @@ def main():
     con = sqlite3.connect(DB_PATH)        # opens (or creates) the database file
     con.executescript(SCHEMA)             # runs all the CREATE TABLE statements
 
-    con.executemany("INSERT INTO products VALUES (?, ?, ?, ?, ?)", PRODUCTS)    # adds the 8 products
+    con.executemany("INSERT INTO products VALUES (?, ?, ?, ?, ?)", PRODUCTS)            # adds the 8 products
     con.executemany("INSERT INTO customers VALUES (?, ?, ?, ?, ?)", TEST_CUSTOMERS)     # adds the 8 test customers
 
     add_test_orders(con)                  # adds the 8 test orders
-    random.seed(42)                       # makes the filler data reproducible (the same seed gives the same “random” numbers every time, so your database is identical on every run)
+    random.seed(42)                       # fixed seed: identical "random" filler data on every run
     add_filler(con)                       # adds random ordinary customers and orders
 
     con.commit()                          # saves the changes

@@ -1,18 +1,18 @@
 """MCP server: exposes Lumen Market's order lookups and policy search to any MCP client."""
 from mcp.server.mcpserver import MCPServer
 
-import db  # my own db.py, in the same folder
-import kb  # my own kb.py: policy search
+import db  # read-only order queries
+import kb  # policy search (RAG)
 
-mcp = MCPServer("lumen-market-support") # class from the library
+mcp = MCPServer("lumen-market-support") 
 
-@mcp.tool() # a decorator: a label placed above a function that changes how it’s used; register as an MCP tool.
+@mcp.tool() # register as an MCP tool; the docstring becomes the description Claude sees
 def get_order(order_id: str, email: str) -> dict:
     """Look up one order by its order number (e.g. ORD-1001), including status,  
     dates, tracking number, refund date and the products in it (with warranty
     period). The customer's email address is required: the order is only
     returned if it belongs to that email."""
-    return db.get_order(order_id, email) #docstring above: Claude does not see your code, only these descriptions. They are how it decides when to use a tool.
+    return db.get_order(order_id, email)
 
 
 @mcp.tool()

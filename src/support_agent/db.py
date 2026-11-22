@@ -8,8 +8,8 @@ DB_PATH = Path(__file__).resolve().parents[2] / "data" / "shop.db"
 
 def _connect():
     """Open the database in READ-ONLY mode, so nothing can be changed or deleted."""
-    con = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)    #?mode=ro":open the database in read-only mode; safety layer (together with agent being able to call only those two functions)
-    con.row_factory = sqlite3.Row      # rows behave like dictionaries: row["status"]
+    con = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)    # read-only mode: second safety layer, next to the fixed set of tools
+    con.row_factory = sqlite3.Row                                 # rows behave like dictionaries: row["status"]
     return con
 
 

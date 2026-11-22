@@ -22,14 +22,14 @@ ESCALATION_TOOL = {
                 "type": "string",
                 "description": "Short reason, e.g. 'parcel more than 5 days late' or "
                                "'damage claim for item over 500 euros'.",
-            }, # describtion guides Claude to give a reason for the escalation, not just say "I escalated"
+            }, # guides Claude to give a real reason, not just "I escalated"
             "summary": {
                 "type": "string",
                 "description": "Summary for the human colleague: customer email, order "
                                "number, what the customer wants, and what you already found.",
             },
         },
-        "required": ["reason", "summary"], #Claude must always say why it escalates and summarise the case. The reason will also show why the agent escalated, not only that it did.
+        "required": ["reason", "summary"], # reason + summary required: proper handover, and measurable in the eval 
     },
 }
 
@@ -37,15 +37,15 @@ ESCALATION_TOOL = {
 def escalate_to_human(reason: str, summary: str) -> dict:
     """Create a support ticket for the human team (saved as one line in a JSONL file)."""
     ticket = {
-        "ticket_id": f"ESC-{uuid.uuid4().hex[:8].upper()}",
-        "created_at": datetime.now().isoformat(timespec="seconds"),
-        "reason": reason,
-        "summary": summary,
+        "ticket_id": f"ESC-{uuid.uuid4().hex[:8].upper()}",             # random unique ID, e.g. ESC-3F9A1C2B
+        "created_at": datetime.now().isoformat(timespec="seconds"),     # timestamp, e.g. 2026-11-19T14:15:02
+        "reason": reason,                                               # why Claude escalated
+        "summary": summary,                                             # handover for the human colleague
     }
-    TICKETS_FILE.parent.mkdir(exist_ok=True)
-    with TICKETS_FILE.open("a", encoding="utf-8") as f: #generates a random unique ID, shortened to 8 characters
-        f.write(json.dumps(ticket) + "\n")
-    return {"status": "escalated", "ticket_id": ticket["ticket_id"]}
+    TICKETS_FILE.parent.mkdir(exist_ok=True)                            # make sure the data/ folder exists
+    with TICKETS_FILE.open("a", encoding="utf-8") as f:                 # append: one JSON line per ticket
+        f.write(json.dumps(ticket) + "\n")                              # dict -> JSON text, newline ends the line
+    return {"status": "escalated", "ticket_id": ticket["ticket_id"]}    # Claude can share the ticket ID with the customer
 
 
 if __name__ == "__main__":

@@ -8,12 +8,11 @@ import anthropic
 from dotenv import load_dotenv
 from mcp import Client, StdioServerParameters
 
-# load in prompt and escalation_to_human tool 
 from escalation import ESCALATION_TOOL, escalate_to_human  
 from prompts import SYSTEM_PROMPT
 
-MODEL = "claude-haiku-5-5"   # cheap and fast for development
-MAX_ROUNDS = 6               # safety limit: max tool rounds per customer message
+MODEL = "claude-haiku-5-5"          # cheap and fast for development
+MAX_ROUNDS = 6                      # safety limit: max tool rounds per customer message
 
 # How to start the MCP server: "run mcp_server.py (next to this file) with this code"
 MCP_SERVER = StdioServerParameters(
@@ -53,8 +52,8 @@ async def answer(mcp_client, claude, messages, tools):
     """Let Claude use tools until it gives a final answer.
     Returns the answer text and a log of the tools that were called."""
     tool_log = []
-    for _ in range(MAX_ROUNDS):     #repeat, but at most 6 times (the safety limit)
-        response = await claude.messages.create(        #step 1: agent asks Claude and sends system prompt + possible tools + client's message
+    for _ in range(MAX_ROUNDS):                         #repeat, but at most 6 times (the safety limit)
+        response = await claude.messages.create(        #ask Claude: system prompt + tools + full conversation
             model=MODEL,
             max_tokens=1024,
             system=SYSTEM_PROMPT,
@@ -63,18 +62,18 @@ async def answer(mcp_client, claude, messages, tools):
         )
         messages.append({"role": "assistant", "content": response.content})     # add Claude’s reply to the conversation (the memory)
 
-        if response.stop_reason != "tool_use":                 # final answer, so collect the text and return it
+        if response.stop_reason != "tool_use":                                  # final answer, so collect the text and return it
             text = "".join(b.text for b in response.content if b.type == "text")
             return text, tool_log
 
-        tool_results = []                                      # Claude asked for tools
-        for block in response.content:                         # run each requested tool and collect the results as one message 
+        tool_results = []                                                       # Claude asked for tools
+        for block in response.content:                                          # run each requested tool and collect the results as one message 
             if block.type == "tool_use":
                 result = await run_tool(mcp_client, block.name, block.input)
-                tool_log.append({"tool": block.name, "input": block.input})     #records which tools were called
+                tool_log.append({"tool": block.name, "input": block.input})     # records which tools were called
                 tool_results.append({
                     "type": "tool_result",
-                    "tool_use_id": block.id,                   # labels each result to which request it answers
+                    "tool_use_id": block.id,                                    # labels each result to which request it answers
                     "content": result,
                 })
         messages.append({"role": "user", "content": tool_results})

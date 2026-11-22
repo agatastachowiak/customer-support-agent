@@ -11,7 +11,7 @@ KB_DIR = Path(__file__).resolve().parents[2] / "data" / "kb"
 def _make_chunk(source, title, lines):
     return {"source": source, "title": title, "text": " ".join(lines)}
 
-# ## means a new card begins
+# Each "## " heading starts a new chunk.
 
 def load_chunks(): 
     """Split every policy file into sections, one per '## ' heading. 
@@ -31,9 +31,7 @@ def load_chunks():
     return chunks
 
 
-@lru_cache(maxsize=1) #a decorator that makes a function remember its result, a first call to _index() 
-                      #loads the model and fingerprints the 18 cards. Every later call returns the stored result instantly. 
-                      # Without it, every single question would reload the model and recompute all 18 fingerprints.
+@lru_cache(maxsize=1) # computed once: later calls reuse the loaded model and chunk vectors
 def _index():
     """Load the model and fingerprint all chunks. Runs only once; later calls reuse the result."""
     model = SentenceTransformer(MODEL_NAME)
