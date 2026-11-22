@@ -3,6 +3,7 @@ anthropic==2.9.0
 mcp[cli]==2.3.0
 python-dotenv==1.2.4
 PyYAML==6.0.3
+streamlit==1.67.0
 
 # Embeddings (RAG)
 # Pinned to versions compatible with torch 2.2.2, the last PyTorch release for Intel Macs

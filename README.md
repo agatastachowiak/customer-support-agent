@@ -1,8 +1,10 @@
 # Lumen Market Support Agent
 
-An AI customer support agent for a fictional online shop. It answers customer questions by combining **order data** (SQLite, exposed through an **MCP server**) with the shop's **policy documents** (retrieved with **RAG**), and it **escalates to a human** when a case should not be handled automatically. Built with the Claude API and evaluated on 15 realistic customer questions.
+An AI customer support agent for a fictional online shop. It answers customer questions by combining **order data** (SQLite, exposed through an **MCP server**) with the shop's **policy documents** (retrieved with **RAG**), and it **escalates to a human** when a case should not be handled automatically. Built with the Claude API, with a Streamlit chat interface, and evaluated on 15 realistic customer questions.
 
 **Result:** 15/15 test cases passed on two consecutive runs.
+
+![Streamlit chat: late parcel escalated to a human](docs/screenshot_escalation.png)
 
 ---
 
@@ -99,6 +101,8 @@ All questions, answers, tools used and checks are saved in [`eval/results.json`]
 
 ## Example conversations
 
+![Streamlit chat: return question with a follow-up](docs/screenshot_return.png)
+
 **Return window expired** (tools: `get_order`, `search_policies`)
 
 > **Customer:** Hello, this is lucas.jansen@example.com. I'd like to return my kettle from order ORD-1002.
@@ -121,6 +125,7 @@ All questions, answers, tools used and checks are saved in [`eval/results.json`]
 
 ```
 customer-support-agent/
+├── app/streamlit_app.py      # browser chat interface (Streamlit)
 ├── data/kb/                  # policy documents (knowledge base)
 ├── scripts/
 │   ├── seed_db.py            # builds the synthetic database (reproducible)
@@ -160,6 +165,9 @@ python src/support_agent/agent.py
 
 # 5. Run the evaluation
 python eval/run_eval.py
+
+# 6. Or chat in the browser
+streamlit run app/streamlit_app.py
 ```
 
 ## Limitations and next steps
@@ -175,7 +183,7 @@ python eval/run_eval.py
 
 ## Tech stack
 
-Python · Claude API (Anthropic) · Model Context Protocol (MCP Python SDK) · SQLite · sentence-transformers · PyYAML
+Python · Claude API (Anthropic) · Model Context Protocol (MCP Python SDK) · SQLite · sentence-transformers · Streamlit · PyYAML
 
 ---
 
